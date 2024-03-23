@@ -58,18 +58,43 @@ class Main {
      * @param parsedArgs The parsed arguments
      */
     public static ArrayList<Obstacle> parseObstacles(HashMap<String, ArrayList<String>> parsedArgs) {
+//       ONLY PARSING THE GUARD:
+
+//        ArrayList<Obstacle> obstacles = new ArrayList<>();
+//        ObstacleType type = ObstacleType.GUARD;
+//        String key = "-" + type.getArgumentName();
+//        ArrayList<String> args = parsedArgs.get(key);
+//        if (args == null) {
+//            return obstacles;
+//        }
+//        for (String arg : args) {
+//            // Remove the parentheses from the argument
+//            String cleanedArg = stripParentheses(arg);
+//            Obstacle obstacle = Guard.parse(cleanedArg);
+//            obstacles.add(obstacle);
+//        }
+//        return obstacles;
+
+//        NEW PARSING (multiple obstacles)
+
         ArrayList<Obstacle> obstacles = new ArrayList<>();
-        ObstacleType type = ObstacleType.GUARD;
-        String key = "-" + type.getArgumentName();
-        ArrayList<String> args = parsedArgs.get(key);
-        if (args == null) {
-            return obstacles;
-        }
-        for (String arg : args) {
-            // Remove the parentheses from the argument
-            String cleanedArg = stripParentheses(arg);
-            Obstacle obstacle = Guard.parse(cleanedArg);
-            obstacles.add(obstacle);
+        for (ObstacleType type : ObstacleType.values()) {
+            String key = "-" + type.getArgumentName();
+            ArrayList<String> args = parsedArgs.get(key);
+            if (args == null) {
+                continue;
+            }
+            for (String arg : args) {
+                // Remove the parentheses from the argument
+                String cleanedArg = stripParentheses(arg);
+                Obstacle obstacle = switch (type) {
+                    case GUARD -> Guard.parse(cleanedArg);
+                    case FENCE -> Fence.parse(cleanedArg);
+                    case SENSOR -> Sensor.parse(cleanedArg);
+                    case CAMERA -> Camera.parse(cleanedArg);
+                };
+                obstacles.add(obstacle);
+            }
         }
         return obstacles;
     }
